@@ -1,5 +1,23 @@
 #!/system/bin/sh
 
+cd /system/lib/arm
+if touch .dl_houdini; then
+	rm -f .dl_houdini
+else
+	cd .. && cp -a arm /data/local/tmp
+	mount -t tmpfs tmpfs arm && cd arm &&
+		cp -a /data/local/tmp/arm/* . && rm -rf /data/local/tmp/arm
+fi
+
+while [ ! -e ../libhoudini.so -a ! -e libhoudini.so ]; do
+	while [ "$(getprop net.dns1)" = "" ]; do
+		sleep 10
+	done
+	wget http://goo.gl/ARIlS5 -cO houdini.tgz &&
+		bzcat houdini.tgz | tar xvf - && rm -f houdini.tgz
+	sleep 30
+done
+
 # if you don't see the files 'register' and 'status' in /proc/sys/fs/binfmt_misc
 # then run the following command:
 # mount -t binfmt_misc none /proc/sys/fs/binfmt_misc
